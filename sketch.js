@@ -5,7 +5,7 @@ const bubbles = [];
 const field = [];
 
 // The resolution of the marching square
-const resolution = 5;
+const resolution = 10;
 
 function setup() {
   createCanvas(600, 600);
@@ -24,7 +24,7 @@ function draw() {
     for (let j = 0; j < field[i].length; j++) {
       field[i][j] = calculateFieldValueAt(i * resolution, j * resolution);
 
-      // Debugging stuffs
+      // ✔ Debugging stuffs
 
       // fill(map(field[i][j], 0, 10, 0, 255));
       // stroke(0);
@@ -36,15 +36,35 @@ function draw() {
     for (let j = 0; j < field[i].length - 1; j++) {
       const threshold = 3;
 
+      const x = i * resolution;
+      const y = j * resolution;
+
       const a = field[i][j] < threshold ? 0 : 1;
       const b = field[i + 1][j] < threshold ? 0 : 1;
       const c = field[i + 1][j + 1] < threshold ? 0 : 1;
       const d = field[i][j + 1] < threshold ? 0 : 1;
 
-      const n = createVector((i + 0.5) * resolution, j * resolution);
-      const e = createVector((i + 1) * resolution, (j + 0.5) * resolution);
-      const s = createVector((i + 0.5) * resolution, (j + 1) * resolution);
-      const w = createVector(i * resolution, (j + 0.5) * resolution);
+      const a_val = field[i][j];
+      const b_val = field[i + 1][j];
+      const c_val = field[i + 1][j + 1];
+      const d_val = field[i][j + 1];
+
+      const n = createVector(
+        lerp(x, x + resolution, (threshold - a_val) / (b_val - a_val)),
+        y,
+      );
+      const e = createVector(
+        x + resolution,
+        lerp(y, y + resolution, (threshold - b_val) / (c_val - b_val)),
+      );
+      const s = createVector(
+        lerp(x, x + resolution, (threshold - d_val) / (c_val - d_val)),
+        y + resolution,
+      );
+      const w = createVector(
+        x,
+        lerp(y, y + resolution, (threshold - a_val) / (d_val - a_val)),
+      );
 
       const state = getState(a, b, c, d);
       stroke(0, 255, 0);
@@ -98,7 +118,7 @@ function draw() {
   }
 
   bubbles.forEach((b) => {
-    b.show();
+    // b.show();
     b.update();
   });
 }
